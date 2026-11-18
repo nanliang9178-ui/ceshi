@@ -1,0 +1,123 @@
+<view class="page" style="--brand: {{theme}}">
+  <block wx:if="{{order}}">
+    <!-- 状态头 -->
+    <view class="status-head {{cancelled ? 'cancelled' : ''}}">
+      <view class="status-title">{{statusText}}</view>
+      <view class="status-desc">{{statusDesc}}</view>
+      <view wx:if="{{isDelivery && !cancelled}}" class="pickup-box">
+        <text class="pickup-label">预计</text>
+        <text class="pickup-no">{{etaText}}<text class="unit">分</text></text>
+      </view>
+      <view wx:elif="{{order.pickupNo && !cancelled}}" class="pickup-box">
+        <text class="pickup-label">{{isTakeaway ? '取餐号' : '桌号'}}</text>
+        <text class="pickup-no">{{isTakeaway ? order.pickupNo : (order.tableName || '堂食')}}</text>
+      </view>
+    </view>
+
+    <!-- 外卖配送信息 -->
+    <view wx:if="{{isDelivery && order.address}}" class="card delivery-card">
+      <view class="dc-title">配送信息</view>
+      <view class="dc-line">{{order.receiverName}} · {{order.receiverPhone}}</view>
+      <view class="dc-addr">{{order.address}}</view>
+    </view>
+
+    <!-- 进度 -->
+    <view wx:if="{{!cancelled}}" class="card steps-card">
+      <view wx:for="{{steps}}" wx:key="key" class="step">
+        <view class="step-dot-wrap">
+          <view class="step-dot {{item.done ? 'done' : ''}} {{item.active ? 'active' : ''}}"></view>
+          <view wx:if="{{index < steps.length - 1}}" class="step-line {{item.done ? 'done' : ''}}"></view>
+        </view>
+        <view class="step-label {{item.done ? 'done' : ''}} {{item.active ? 'active' : ''}}">{{item.label}}</view>
+      </view>
+    </view>
+
+    <view wx:else class="card cancel-card">
+      <view class="cancel-title">订单已取消</view>
+      <view class="cancel-reason">{{order.cancelReason || '顾客取消'}}</view>
+      <view wx:if="{{order.payStatus === 'REFUNDED'}}" class="cancel-tip">退款已原路退回，1-3 个工作日到账</view>
+    </view>
+
+    <!-- 商品 -->
+    <view class="card">
+      <view class="card-title">
+        <text>{{isDelivery ? '外卖订单' : (isTakeaway ? '自取订单' : order.tableName + ' 桌')}}</text>
+        <text class="muted">{{itemCountText}}</text>
+      </view>
+      <view wx:for="{{items}}" wx:key="id" class="item">
+        <image wx:if="{{item.imageUrl}}" class="item-img" src="{{item.imageUrl}}" mode="aspectFill" />
+        <view wx:else class="item-img item-img-fallback">🍲</view>
+        <view class="flex-1">
+          <view class="item-name ellipsis">{{item.productName}}</view>
+          <view wx:if="{{item.specText}}" class="item-spec ellipsis">{{item.specText}}</view>
+          <view wx:if="{{item.remark}}" class="item-remark ellipsis">备注：{{item.remark}}</view>
+        </view>
+        <view class="item-right">
+          <view class="item-amount">¥{{item.amountText}}</view>
+          <view class="item-qty">x{{item.quantity}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 费用 -->
+    <view class="card fee-card">
+      <view class="fee-line">
+        <text>商品金额</text>
+        <text>¥{{itemAmountText}}</text>
+      </view>
+      <view wx:if="{{order.discountAmount > 0}}" class="fee-line discount">
+        <text>满减优惠</text>
+        <text>-¥{{discountText}}</text>
+      </view>
+      <view wx:if="{{order.packingFee > 0}}" class="fee-line">
+        <text>打包费</text>
+        <text>¥{{packingText}}</text>
+      </view>
+      <view class="fee-line total">
+        <text>实付</text>
+        <view class="total-price"><text class="price-symbol">¥</text><text class="price">{{totalText}}</text></view>
+      </view>
+    </view>
+
+    <!-- 订单信息 -->
+    <view class="card info-card">
+      <view class="info-line" bindtap="copyOrderNo">
+        <text class="info-key">订单号</text>
+        <text class="info-val">{{order.orderNo}} <text class="copy">复制</text></text>
+      </view>
+      <view class="info-line">
+        <text class="info-key">下单时间</text>
+        <text class="info-val">{{createdText}}</text>
+      </view>
+      <view class="info-line" wx:if="{{order.peopleCount}}">
+        <text class="info-key">用餐人数</text>
+        <text class="info-val">{{order.peopleCount}} 人</text>
+      </view>
+      <view class="info-line" wx:if="{{order.remark}}">
+        <text class="info-key">备注</text>
+        <text class="info-val">{{order.remark}}</text>
+      </view>
+      <view class="info-line">
+        <text class="info-key">支付状态</text>
+        <text class="info-val">{{order.payStatusText}}</text>
+      </view>
+    </view>
+
+    <view style="height: 200rpx;"></view>
+
+    <!-- 底部操作 -->
+    <view class="action-bar safe-bottom">
+      <view wx:if="{{order.pickupNo && !cancelled}}" class="action-ghost" bindtap="callShop">联系商家</view>
+      <view wx:if="{{canRemind}}" class="action-ghost" bindtap="remind">催一下</view>
+      <view wx:if="{{canCancel}}" class="action-ghost" bindtap="cancelOrder">取消订单</view>
+      <view wx:if="{{canAppend}}" class="action-ghost" bindtap="appendItems">加菜</view>
+      <view wx:if="{{canPay}}" class="action-primary" bindtap="payNow">立即支付 ¥{{totalText}}</view>
+    </view>
+  </block>
+
+  <view wx:elif="{{!loading}}" class="empty">
+    <view class="empty-icon">🧾</view>
+    <view class="empty-title">订单不存在或已删除</view>
+    <view class="btn-ghost" style="margin-top: 32rpx;" bindtap="goOrders">返回订单列表</view>
+  </view>
+</view>

@@ -1,0 +1,144 @@
+<view class="page" style="--brand: {{theme}}">
+  <!-- 骨架 -->
+  <block wx:if="{{loading}}">
+    <view class="sk cover-sk"></view>
+    <view class="sk" style="height: 220rpx; margin: 24rpx 32rpx;"></view>
+    <view class="sk" style="height: 300rpx; margin: 0 32rpx;"></view>
+  </block>
+
+  <!-- 失败 -->
+  <block wx:elif="{{error}}">
+    <view class="empty">
+      <view class="empty-icon">🥲</view>
+      <view class="empty-title">{{error}}</view>
+      <view class="empty-desc">请检查网络后重试</view>
+      <view class="btn-ghost" style="margin-top: 32rpx;" bindtap="refresh">重新加载</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 头图 -->
+    <view class="hero">
+      <image wx:if="{{boot.brand.coverUrl}}" class="hero-img" src="{{boot.brand.coverUrl}}" mode="aspectFill" />
+      <view wx:else class="hero-img hero-fallback"></view>
+      <view class="hero-mask"></view>
+
+      <view class="hero-top">
+        <view class="status-pill {{storeOpen ? 'open' : 'closed'}}">
+          <view class="dot"></view>
+          {{storeOpen ? '营业中' : '休息中'}}
+        </view>
+        <view class="status-pill" wx:if="{{boot.store}}">{{boot.store.businessHours}}</view>
+      </view>
+
+      <view class="hero-brand">
+        <view class="logo-wrap">
+          <image wx:if="{{boot.brand.logoUrl}}" class="logo" src="{{boot.brand.logoUrl}}" mode="aspectFill" />
+          <view wx:else class="logo logo-text">{{initial}}</view>
+        </view>
+        <view class="flex-1">
+          <view class="shop-name ellipsis">{{boot.store.name || boot.tenant.name}}</view>
+          <view class="shop-slogan ellipsis">{{slogan || '扫码点单 · 堂食外卖都能点'}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="body">
+      <!-- 当前桌号 -->
+      <view class="table-strip">
+        <view class="strip-state">
+          <view class="strip-dot"></view>
+          {{hasTable ? '已识别桌号' : '未扫码进入'}}
+        </view>
+        <view class="strip-value">{{hasTable ? tableName : '可下外卖单'}}</view>
+        <view class="strip-link" bindtap="goOrders">我的订单 ›</view>
+      </view>
+
+      <!-- 用餐方式 -->
+      <view class="mode-row">
+        <view class="mode-card dine {{hasTable ? '' : 'disabled'}}" data-type="DINE_IN" bindtap="startOrder">
+          <view class="mode-badge">堂食</view>
+          <view class="mode-title">扫码点单</view>
+          <view class="mode-sub">{{hasTable ? tableName : '请扫描桌码'}}</view>
+          <view class="mode-action">{{hasTable ? '开始点单' : '未识别桌号'}}</view>
+        </view>
+
+        <view class="mode-card delivery" data-type="DELIVERY" bindtap="startOrder">
+          <view class="mode-badge">外卖</view>
+          <view class="mode-title">配送到家</view>
+          <view class="mode-sub">{{deliveryText}}</view>
+          <view class="mode-action">{{deliveryFeeText}}</view>
+        </view>
+      </view>
+
+      <!-- 公告 -->
+      <view wx:if="{{announcement}}" class="notice">
+        <view class="notice-tag">公告</view>
+        <text class="notice-text ellipsis">{{announcement}}</text>
+      </view>
+
+      <!-- 优惠条 -->
+      <view wx:if="{{fullReduceText}}" class="promo-bar">
+        <text class="promo-icon">券</text>
+        <text class="promo-text">{{fullReduceText}}，结算自动抵扣</text>
+      </view>
+
+      <!-- 轮播 -->
+      <swiper
+        wx:if="{{banners.length > 0}}"
+        class="banner"
+        autoplay
+        circular
+        interval="4200"
+        duration="420"
+        bindchange="onBannerChange"
+      >
+        <swiper-item wx:for="{{banners}}" wx:key="url">
+          <image class="banner-img" src="{{item.url}}" mode="aspectFill" data-url="{{item.url}}" bindtap="previewBanner" />
+        </swiper-item>
+      </swiper>
+      <view wx:if="{{banners.length > 1}}" class="banner-dots">
+        <view wx:for="{{banners}}" wx:key="url" class="dot-item {{activeBanner === index ? 'active' : ''}}"></view>
+      </view>
+
+      <!-- 本店招牌 -->
+      <view wx:if="{{signature.length > 0}}" class="section">
+        <view class="section-head">
+          <view class="section-title">本店招牌</view>
+          <view class="section-more" data-type="DINE_IN" bindtap="startOrder">全部菜单 ›</view>
+        </view>
+        <scroll-view scroll-x class="sig-scroll" enhanced show-scrollbar="{{false}}">
+          <view wx:for="{{signature}}" wx:key="id" class="sig-card" data-type="DINE_IN" bindtap="startOrder">
+            <view class="sig-img-wrap">
+              <image wx:if="{{item.imageUrl}}" class="sig-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+              <view wx:else class="sig-img sig-fallback">🍲</view>
+              <view wx:if="{{item.tags.length > 0}}" class="sig-tag">{{item.tags[0]}}</view>
+            </view>
+            <view class="sig-name ellipsis">{{item.name}}</view>
+            <view class="sig-price">¥{{item.priceText}}</view>
+          </view>
+        </scroll-view>
+      </view>
+
+      <!-- 门店信息 -->
+      <view wx:if="{{boot.store}}" class="info-card">
+        <view class="info-title">门店信息</view>
+        <view class="info-line">
+          <text class="info-key">地址</text>
+          <text class="info-val">{{boot.store.address || '到店咨询店员'}}</text>
+        </view>
+        <view class="info-line">
+          <text class="info-key">电话</text>
+          <text class="info-val brand-text" bindtap="callShop">{{boot.store.phone || boot.brand.servicePhone || '未提供'}}</text>
+        </view>
+        <view class="info-line">
+          <text class="info-key">提示</text>
+          <text class="info-val">{{boot.store.notice || '堂食扫码点单，外卖配送到家'}}</text>
+        </view>
+      </view>
+
+      <view class="footer">{{boot.brand.copyright || '本店由天枢点单提供技术支持'}}</view>
+      <view class="tab-space"></view>
+    </view>
+  </block>
+</view>

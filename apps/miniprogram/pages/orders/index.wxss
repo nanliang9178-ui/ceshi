@@ -1,0 +1,175 @@
+.page {
+  min-height: 100vh;
+  background: var(--cream);
+  padding-bottom: 40rpx;
+}
+
+.tabs {
+  display: flex;
+  padding: 20rpx 24rpx 8rpx;
+}
+
+.tab {
+  position: relative;
+  margin-right: 40rpx;
+  padding: 10rpx 0;
+  font-size: 29rpx;
+  color: var(--ink-3);
+}
+
+.tab.active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 40rpx;
+  height: 6rpx;
+  margin-left: -20rpx;
+  border-radius: 3rpx;
+  background: var(--brand);
+}
+
+.tab-dot {
+  position: absolute;
+  top: 12rpx;
+  right: -10rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.order-card {
+  margin: 20rpx 24rpx;
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 24rpx 28rpx;
+  box-shadow: 0 10rpx 26rpx -22rpx rgba(23, 24, 28, 0.4);
+}
+
+.order-card:active {
+  opacity: 0.85;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.head-left {
+  display: flex;
+  align-items: center;
+}
+
+.table-tag {
+  height: 40rpx;
+  line-height: 40rpx;
+  padding: 0 16rpx;
+  border-radius: 10rpx;
+  background: #17181c;
+  color: #fff;
+  font-size: 22rpx;
+}
+
+.table-tag.delivery {
+  background: #2e90fa;
+}
+
+.tab-space {
+  height: calc(120rpx + env(safe-area-inset-bottom));
+}
+
+.pickup {
+  margin-left: 12rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+  font-family: 'DIN Alternate', sans-serif;
+}
+
+.status {
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.status.active {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.card-body {
+  margin-top: 18rpx;
+}
+
+.goods {
+  font-size: 26rpx;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.remark {
+  margin-top: 6rpx;
+  font-size: 21rpx;
+  color: var(--ink-3);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16rpx;
+}
+
+.meta-time {
+  font-size: 21rpx;
+  color: var(--ink-3);
+}
+
+.meta-right {
+  display: flex;
+  align-items: baseline;
+}
+
+.count {
+  font-size: 21rpx;
+  color: var(--ink-3);
+  margin-right: 12rpx;
+}
+
+.amount {
+  font-size: 30rpx;
+  font-weight: 700;
+  font-family: 'DIN Alternate', sans-serif;
+  color: var(--ink);
+}
+
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f4efe8;
+}
+
+.order-no {
+  font-size: 20rpx;
+  color: #c2bab1;
+}
+
+.foot-btn {
+  font-size: 23rpx;
+  color: var(--brand);
+}
+
+.list-end {
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 21rpx;
+  color: #c9c2b9;
+}

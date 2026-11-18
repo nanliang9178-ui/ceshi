@@ -1,0 +1,156 @@
+<view class="page" style="--brand: {{theme}}">
+  <scroll-view scroll-y class="scroll">
+    <!-- 用餐方式 -->
+    <view class="card block">
+      <view class="type-row">
+        <view
+          class="type-item {{type === 'DINE_IN' ? 'active' : ''}} {{hasTable ? '' : 'disabled'}}"
+          data-type="DINE_IN"
+          bindtap="switchType"
+        >
+          <view class="type-title">堂食</view>
+          <view class="type-sub">{{hasTable ? tableName : '请先扫码'}}</view>
+        </view>
+        <view class="type-item {{type === 'DELIVERY' ? 'active' : ''}}" data-type="DELIVERY" bindtap="switchType">
+          <view class="type-title">外卖</view>
+          <view class="type-sub">约 {{deliveryEta}} 分钟送达</view>
+        </view>
+      </view>
+      <view wx:if="{{!storeOpen}}" class="closed-tip">门店休息中，暂不可下单</view>
+    </view>
+
+    <!-- 外卖收货信息 -->
+    <view wx:if="{{type === 'DELIVERY'}}" class="card block">
+      <view class="block-title">
+        <text>配送信息</text>
+        <text class="block-sub">{{deliveryRange}}</text>
+      </view>
+
+      <view class="form-line">
+        <text class="form-label">收货人</text>
+        <input
+          class="form-input"
+          value="{{receiverName}}"
+          placeholder="怎么称呼您"
+          placeholder-class="ph"
+          maxlength="20"
+          bindinput="onReceiverInput"
+        />
+      </view>
+      <view class="form-line">
+        <text class="form-label">手机号</text>
+        <input
+          class="form-input"
+          type="number"
+          value="{{receiverPhone}}"
+          placeholder="用于配送联系"
+          placeholder-class="ph"
+          maxlength="11"
+          bindinput="onPhoneInput"
+        />
+      </view>
+      <view class="form-line column">
+        <text class="form-label">收货地址</text>
+        <textarea
+          class="form-textarea"
+          value="{{address}}"
+          placeholder="小区/写字楼 + 楼栋 + 门牌号"
+          placeholder-class="ph"
+          maxlength="120"
+          auto-height
+          bindinput="onAddressInput"
+        />
+      </view>
+
+      <view wx:if="{{addressError}}" class="form-error">{{addressError}}</view>
+      <view wx:if="{{storeAddr}}" class="form-tip">从 {{storeAddr}} 出发配送</view>
+    </view>
+
+    <!-- 菜品清单 -->
+    <view class="card block">
+      <view class="block-title">
+        <text>{{storeName}}</text>
+        <text class="block-sub">共 {{itemCount}} 件</text>
+      </view>
+      <view wx:for="{{items}}" wx:key="key" class="goods">
+        <image wx:if="{{item.imageUrl}}" class="g-img" src="{{item.imageUrl}}" mode="aspectFill" />
+        <view wx:else class="g-img g-fallback">🍲</view>
+        <view class="flex-1">
+          <view class="g-name ellipsis">{{item.name}}</view>
+          <view wx:if="{{item.specText}}" class="g-spec ellipsis">{{item.specText}}</view>
+          <view class="g-price">¥{{item.amountText}}</view>
+        </view>
+        <view class="g-qty">x{{item.quantity}}</view>
+      </view>
+    </view>
+
+    <!-- 用餐信息 -->
+    <view class="card block">
+      <view class="line" wx:if="{{type === 'DINE_IN'}}">
+        <text class="line-label">用餐人数</text>
+        <view class="stepper">
+          <view class="step-btn {{peopleCount <= 1 ? 'disabled' : ''}}" bindtap="onPeopleDec">−</view>
+          <view class="step-num">{{peopleCount}}</view>
+          <view class="step-btn plus" bindtap="onPeopleInc">+</view>
+        </view>
+      </view>
+      <view class="line column">
+        <text class="line-label">备注</text>
+        <textarea
+          class="remark"
+          value="{{remark}}"
+          placeholder="{{type === 'DELIVERY' ? '如：放门口、不要香菜、多给餐具' : '如：不要香菜、少辣、打包分开装'}}"
+          placeholder-class="remark-ph"
+          maxlength="200"
+          bindinput="onRemarkInput"
+        />
+      </view>
+    </view>
+
+    <!-- 费用 -->
+    <view class="card block">
+      <view class="fee-line">
+        <text>商品金额</text>
+        <text class="fee-val">¥{{itemAmountText}}</text>
+      </view>
+      <view wx:if="{{discountVisible}}" class="fee-line discount">
+        <text>满减优惠</text>
+        <text class="fee-val">-¥{{discountText}}</text>
+      </view>
+      <view wx:if="{{packingVisible}}" class="fee-line">
+        <text>打包费</text>
+        <text class="fee-val">¥{{packingText}}</text>
+      </view>
+      <view wx:if="{{deliveryVisible}}" class="fee-line">
+        <text>配送费</text>
+        <text class="fee-val">¥{{deliveryText}}</text>
+      </view>
+      <view class="fee-line total">
+        <text>合计</text>
+        <view class="total-price">
+          <text class="price-symbol">¥</text>
+          <text class="price">{{totalText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{reduceHint}}" class="hint">{{reduceHint}}</view>
+    <view wx:if="{{minOrderHint}}" class="hint">{{minOrderHint}}</view>
+
+    <view style="height: 220rpx;"></view>
+  </scroll-view>
+
+  <!-- 底部提交 -->
+  <view class="pay-bar safe-bottom">
+    <view class="pay-left">
+      <view class="pay-label">合计</view>
+      <view class="pay-amount">
+        <text class="price-symbol">¥</text>
+        <text class="price">{{totalText}}</text>
+      </view>
+    </view>
+    <view class="pay-btn {{canSubmit && !submitting ? '' : 'disabled'}}" bindtap="submit">
+      {{submitting ? '提交中…' : (type === 'DELIVERY' ? '提交外卖单' : '提交并支付')}}
+    </view>
+  </view>
+</view>

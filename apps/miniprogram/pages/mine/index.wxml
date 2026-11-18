@@ -1,0 +1,75 @@
+<view class="page" style="--brand: {{theme}}">
+  <!-- 用户卡 -->
+  <view class="user-card">
+    <view class="avatar">
+      <image wx:if="{{customer.avatarUrl}}" class="avatar-img" src="{{customer.avatarUrl}}" mode="aspectFill" />
+      <text wx:else>{{avatarText}}</text>
+    </view>
+    <view class="flex-1">
+      <view class="user-name">{{customer.nickname || '微信顾客'}}</view>
+      <view class="user-sub">{{phoneMasked || '未绑定手机号'}}</view>
+    </view>
+    <button wx:if="{{!phoneMasked}}" class="bind-btn" open-type="getPhoneNumber" bindgetphonenumber="bindPhone">
+      绑定手机号
+    </button>
+    <view wx:else class="bound-tag">已绑定</view>
+  </view>
+
+  <!-- 订单入口 -->
+  <view class="card menu-card">
+    <view class="cell" bindtap="goOrders">
+      <view class="cell-icon">📋</view>
+      <view class="flex-1">
+        <view class="cell-title">我的订单</view>
+        <view class="cell-sub">查看历史订单与进行中的进度</view>
+      </view>
+      <view wx:if="{{activeCount > 0}}" class="cell-badge">进行中</view>
+      <view class="cell-arrow">›</view>
+    </view>
+    <view class="cell" bindtap="goMenu">
+      <view class="cell-icon">🍽️</view>
+      <view class="flex-1">
+        <view class="cell-title">继续点单</view>
+        <view class="cell-sub">{{shopName}}</view>
+      </view>
+      <view class="cell-arrow">›</view>
+    </view>
+    <view class="cell" bindtap="callShop">
+      <view class="cell-icon">📞</view>
+      <view class="flex-1">
+        <view class="cell-title">联系商家</view>
+        <view class="cell-sub">{{servicePhone || '暂无电话'}}</view>
+      </view>
+      <view class="cell-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 其他 -->
+  <view class="card menu-card">
+    <view class="cell" bindtap="about">
+      <view class="cell-icon">ℹ️</view>
+      <view class="flex-1">
+        <view class="cell-title">关于我们</view>
+        <view class="cell-sub">天枢点单 · 扫码点单解决方案</view>
+      </view>
+      <view class="cell-arrow">›</view>
+    </view>
+    <view class="cell" bindtap="clearCache">
+      <view class="cell-icon">🧹</view>
+      <view class="flex-1">
+        <view class="cell-title">清除缓存</view>
+        <view class="cell-sub">遇到异常时可尝试清除后重新进入</view>
+      </view>
+      <view class="cell-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="tips">
+    <view class="tips-title">温馨提示</view>
+    <view class="tips-text">· 点单无需下载 App，扫码即可下单并微信支付</view>
+    <view class="tips-text">· 如需开发票或退单，请联系门店店员</view>
+  </view>
+
+  <view class="footer">{{copyright}}</view>
+  <view class="tab-space"></view>
+</view>

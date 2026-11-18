@@ -1,0 +1,195 @@
+<view class="page" style="--brand: {{theme}}">
+  <!-- 骨架 -->
+  <block wx:if="{{loading}}">
+    <view class="sk" style="height: 200rpx; margin: 20rpx 24rpx;"></view>
+    <view class="sk" style="height: 800rpx; margin: 0 24rpx;"></view>
+  </block>
+
+  <!-- 失败 -->
+  <block wx:elif="{{error}}">
+    <view class="empty">
+      <view class="empty-icon">🍽️</view>
+      <view class="empty-title">{{error}}</view>
+      <view class="btn-ghost" style="margin-top: 32rpx;" bindtap="init">重新加载</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 顶部：堂食 / 外卖 -->
+    <view class="top">
+      <view class="mode-switch">
+        <view
+          class="mode-tab {{orderType === 'DINE_IN' ? 'active' : ''}} {{hasTable ? '' : 'disabled'}}"
+          data-type="DINE_IN"
+          bindtap="switchType"
+        >堂食</view>
+        <view
+          class="mode-tab {{orderType === 'DELIVERY' ? 'active' : ''}}"
+          data-type="DELIVERY"
+          bindtap="switchType"
+        >外卖</view>
+      </view>
+      <view class="top-right" bindtap="goOrders">订单 ›</view>
+    </view>
+
+    <!-- 门店信息 -->
+    <view class="store-line">
+      <view class="store-name ellipsis">{{storeName}}</view>
+      <view class="store-hint ellipsis">
+        <text class="{{storeOpen ? 'open' : 'closed'}}">{{storeOpen ? '营业中' : '休息中'}}</text>
+        <text class="sep">|</text>
+        <text>{{modeHint}}</text>
+      </view>
+    </view>
+
+    <!-- 横向分类 -->
+    <scroll-view class="cat-bar" scroll-x enhanced show-scrollbar="{{false}}" scroll-into-view="chip-{{activeId}}">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        id="chip-{{item.id}}"
+        class="cat-chip {{activeId === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="selectCategory"
+      >
+        <text wx:if="{{item.icon}}" class="chip-icon">{{item.icon}}</text>
+        <text class="chip-label">{{item.name}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 主体 -->
+    <view class="main">
+      <!-- 左侧营销栏 -->
+      <scroll-view class="side" scroll-y enhanced show-scrollbar="{{false}}">
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="side-item {{activeId === item.id ? 'active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="selectCategory"
+        >
+          <block wx:if="{{item.promoTitle}}">
+            <view class="side-promo">
+              <text class="sp-label">{{item.promoLabel}}</text>
+              <text class="sp-title">{{item.promoTitle}}</text>
+            </view>
+          </block>
+          <text wx:else class="side-name">{{item.name}}</text>
+        </view>
+        <view style="height: 300rpx;"></view>
+      </scroll-view>
+
+      <!-- 右侧商品 -->
+      <scroll-view wx:if="{{current}}" class="list" scroll-y enhanced show-scrollbar="{{false}}">
+        <view wx:if="{{bannerUrl}}" class="list-banner">
+          <image class="list-banner-img" src="{{bannerUrl}}" mode="aspectFill" />
+        </view>
+
+        <view class="list-head">
+          <text class="list-title">{{current.name}}</text>
+          <text class="list-count">{{current.products.length}} 款</text>
+        </view>
+
+        <view
+          wx:for="{{current.products}}"
+          wx:for-item="product"
+          wx:key="id"
+          class="product {{product.soldOut ? 'sold' : ''}}"
+        >
+          <view class="p-img-wrap">
+            <image wx:if="{{product.imageUrl}}" class="p-img" src="{{product.imageUrl}}" mode="aspectFill" lazy-load />
+            <view wx:else class="p-img p-fallback">🍲</view>
+            <view wx:if="{{product.tags.length > 0}}" class="p-tag">{{product.tags[0]}}</view>
+            <view wx:if="{{product.soldOut}}" class="p-sold-mask">售罄</view>
+          </view>
+
+          <view class="p-main">
+            <view class="p-name ellipsis-2">{{product.name}}</view>
+
+            <view wx:if="{{product.specPreview.length > 0}}" class="p-specs">
+              <text wx:for="{{product.specPreview}}" wx:for-item="chip" wx:key="*this" class="p-spec">{{chip}}</text>
+            </view>
+
+            <view wx:if="{{product.description}}" class="p-desc ellipsis">{{product.description}}</view>
+
+            <view class="p-bottom">
+              <view class="p-price">
+                <text class="p-sym">¥</text>
+                <text class="p-num">{{product.priceText}}</text>
+                <text wx:if="{{product.originalPriceText}}" class="p-origin">¥{{product.originalPriceText}}</text>
+              </view>
+
+              <view class="p-action">
+                <view wx:if="{{counts[product.id] > 0}}" class="p-count">{{counts[product.id]}}</view>
+                <view
+                  wx:if="{{!product.soldOut}}"
+                  class="p-buy {{product.specGroups.length > 0 ? 'has-spec' : ''}}"
+                  data-id="{{product.id}}"
+                  catchtap="onAdd"
+                >{{product.specGroups.length > 0 ? '选规格' : '+'}}</view>
+                <view wx:else class="p-buy disabled">售罄</view>
+              </view>
+            </view>
+
+            <view class="p-sales">月售 {{product.monthlySales}}</view>
+          </view>
+        </view>
+
+        <view class="list-end">— 共 {{current.products.length}} 款商品 —</view>
+        <view style="height: 300rpx;"></view>
+      </scroll-view>
+    </view>
+
+    <!-- 购物车栏 -->
+    <view class="cart-bar">
+      <view class="cart-left" bindtap="toggleCart">
+        <view class="cart-icon {{cart.count > 0 ? 'active' : ''}}">
+          🛒
+          <view wx:if="{{cart.count > 0}}" class="cart-badge">{{cart.count}}</view>
+        </view>
+        <view class="cart-amount">
+          <block wx:if="{{cart.count > 0}}">
+            <text class="price-symbol">¥</text>
+            <text class="price">{{cartAmountText}}</text>
+          </block>
+          <text wx:else class="cart-empty">{{minOrderText || '未选购菜品'}}</text>
+        </view>
+        <view wx:if="{{reduceText}}" class="cart-reduce">{{reduceText}}</view>
+      </view>
+      <view class="cart-checkout {{cart.count > 0 ? '' : 'disabled'}}" bindtap="goCheckout">去结算</view>
+    </view>
+
+    <!-- 购物车抽屉 -->
+    <view wx:if="{{cartVisible}}" class="drawer-mask" bindtap="closeCart" catchtouchmove="noop">
+      <view class="drawer" catchtap="noop">
+        <view class="drawer-head">
+          <text class="drawer-title">已选菜品</text>
+          <text class="drawer-clear" bindtap="onClear">清空</text>
+        </view>
+        <scroll-view scroll-y class="drawer-body">
+          <view wx:for="{{cartItems}}" wx:key="key" class="drawer-item">
+            <image wx:if="{{item.imageUrl}}" class="d-img" src="{{item.imageUrl}}" mode="aspectFill" />
+            <view wx:else class="d-img d-fallback">🍲</view>
+            <view class="flex-1">
+              <view class="d-name ellipsis">{{item.name}}</view>
+              <view wx:if="{{item.specText}}" class="d-spec ellipsis">{{item.specText}}</view>
+              <view class="d-price"><text class="price-symbol">¥</text>{{item.priceText}}</view>
+            </view>
+            <view class="stepper">
+              <view class="step-btn" data-key="{{item.key}}" bindtap="onCartDec">−</view>
+              <view class="step-num">{{item.quantity}}</view>
+              <view class="step-btn plus" data-key="{{item.key}}" bindtap="onCartInc">+</view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+
+    <spec-popup
+      show="{{specShow}}"
+      product="{{specProduct}}"
+      bind:close="onSpecClose"
+      bind:confirm="onSpecConfirm"
+    />
+  </block>
+</view>

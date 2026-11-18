@@ -1,0 +1,50 @@
+# ============================================================
+# 天枢点单 - 基础设施编排
+#
+# 默认单机部署无需 Docker（SQLite + 内存缓存即可跑）。
+# 需要更高并发 / 多实例时，用本文件启动 MySQL 与 Redis，
+# 然后把 apps/api/.env 切到 MySQL 并填写 REDIS_URL。
+#
+# 启动：docker compose up -d
+# ============================================================
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tianshu-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-tianshu_root}
+      MYSQL_DATABASE: tianshu
+      MYSQL_USER: tianshu
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tianshu_pass}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+08:00
+      - --max_connections=300
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-uroot', '-p$$MYSQL_ROOT_PASSWORD']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: tianshu-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mysql_data:
+  redis_data:

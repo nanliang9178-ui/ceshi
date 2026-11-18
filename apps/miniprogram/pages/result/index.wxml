@@ -1,0 +1,63 @@
+<view class="page" style="--brand: {{theme}}">
+  <view class="hero">
+    <view class="hero-glow"></view>
+    <view class="check">✓</view>
+    <view class="hero-title">下单成功</view>
+    <view class="hero-sub">已通知商家，请留意出餐进度</view>
+  </view>
+
+  <block wx:if="{{order}}">
+    <view wx:if="{{isDelivery}}" class="pickup-card">
+      <view class="pickup-label">预计送达</view>
+      <view class="pickup-no">{{etaText}}<text class="pickup-unit">分钟</text></view>
+      <view class="pickup-tip">商家正在备餐，配送员将电话联系您</view>
+      <view wx:if="{{order.address}}" class="pickup-addr">
+        {{order.receiverName}} {{order.receiverPhone}}<text class="addr-text">{{order.address}}</text>
+      </view>
+    </view>
+
+    <view wx:else class="pickup-card">
+      <view class="pickup-label">{{isTakeaway ? '取餐号' : '桌号'}}</view>
+      <view class="pickup-no">{{isTakeaway ? (order.pickupNo || '-') : (order.tableName || '堂食')}}</view>
+      <view class="pickup-tip">
+        {{isTakeaway ? '请凭取餐号到取餐口取餐' : '餐品将送至您的餐桌，请稍候'}}
+      </view>
+    </view>
+
+    <view class="info-card">
+      <view class="info-line">
+        <text class="info-key">订单号</text>
+        <text class="info-val">{{order.orderNo}}</text>
+      </view>
+      <view class="info-line">
+        <text class="info-key">下单时间</text>
+        <text class="info-val">{{createdText}}</text>
+      </view>
+      <view class="info-line">
+        <text class="info-key">商品</text>
+        <text class="info-val">{{order.itemCount}} 件</text>
+      </view>
+      <view class="info-line">
+        <text class="info-key">实付</text>
+        <text class="info-val price brand-text">¥{{totalText}}</text>
+      </view>
+      <view wx:if="{{order.remark}}" class="info-line">
+        <text class="info-key">备注</text>
+        <text class="info-val">{{order.remark}}</text>
+      </view>
+    </view>
+
+    <view class="actions">
+      <view class="btn-ghost flex-1" bindtap="goOrders">查看全部订单</view>
+      <view class="btn-primary flex-1" style="margin-left: 20rpx;" bindtap="goDetail">查看订单进度</view>
+    </view>
+
+    <view class="again" bindtap="goMenu">继续加菜 →</view>
+  </block>
+
+  <view wx:elif="{{!loading}}" class="empty">
+    <view class="empty-icon">🧾</view>
+    <view class="empty-title">没有找到该订单</view>
+    <view class="btn-ghost" style="margin-top: 32rpx;" bindtap="goOrders">查看我的订单</view>
+  </view>
+</view>

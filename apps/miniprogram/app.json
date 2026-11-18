@@ -1,0 +1,35 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/menu/index",
+    "pages/orders/index",
+    "pages/mine/index",
+    "pages/checkout/index",
+    "pages/result/index",
+    "pages/order-detail/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FBF7F2",
+    "navigationBarTitleText": "扫码点单",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FBF7F2",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#9E9E9E",
+    "selectedColor": "#FF5A1F",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/menu/index", "text": "点单" },
+      { "pagePath": "pages/orders/index", "text": "订单" },
+      { "pagePath": "pages/mine/index", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

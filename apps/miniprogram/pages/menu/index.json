@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "点单",
+  "usingComponents": {
+    "spec-popup": "/components/spec-popup/index"
+  }
+}

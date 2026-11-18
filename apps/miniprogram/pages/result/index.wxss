@@ -1,0 +1,171 @@
+.page {
+  min-height: 100vh;
+  background: var(--cream);
+  padding-bottom: 80rpx;
+}
+
+.hero {
+  position: relative;
+  padding: 70rpx 0 150rpx;
+  text-align: center;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--brand), var(--brand-dark));
+  border-bottom-left-radius: 56rpx;
+  border-bottom-right-radius: 56rpx;
+}
+
+.hero-glow {
+  position: absolute;
+  top: -120rpx;
+  left: 50%;
+  width: 520rpx;
+  height: 520rpx;
+  margin-left: -260rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  filter: blur(20rpx);
+}
+
+.check {
+  position: relative;
+  width: 116rpx;
+  height: 116rpx;
+  line-height: 116rpx;
+  margin: 0 auto 24rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  border: 4rpx solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+  font-size: 56rpx;
+  animation: pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.hero-title {
+  position: relative;
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2rpx;
+}
+
+.hero-sub {
+  position: relative;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.pickup-card {
+  position: relative;
+  margin: -96rpx 32rpx 0;
+  background: #fff;
+  border-radius: 36rpx;
+  padding: 40rpx 32rpx;
+  text-align: center;
+  box-shadow: 0 20rpx 44rpx -26rpx rgba(23, 24, 28, 0.35);
+}
+
+.pickup-label {
+  font-size: 23rpx;
+  color: var(--ink-3);
+  letter-spacing: 2rpx;
+}
+
+.pickup-no {
+  margin-top: 10rpx;
+  font-family: 'DIN Alternate', sans-serif;
+  font-size: 112rpx;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--brand);
+  letter-spacing: 4rpx;
+}
+
+.pickup-tip {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--ink-3);
+}
+
+.pickup-unit {
+  margin-left: 8rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.pickup-addr {
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx dashed var(--line);
+  font-size: 23rpx;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.addr-text {
+  display: block;
+  color: var(--ink-3);
+}
+
+.info-card {
+  margin: 24rpx 32rpx 0;
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 24rpx 32rpx;
+}
+
+.info-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12rpx 0;
+}
+
+.info-key {
+  font-size: 24rpx;
+  color: var(--ink-3);
+  flex-shrink: 0;
+  margin-right: 24rpx;
+}
+
+.info-val {
+  font-size: 25rpx;
+  color: var(--ink-2);
+  text-align: right;
+  word-break: break-all;
+}
+
+.info-val.price {
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  margin: 40rpx 32rpx 0;
+}
+
+.actions .btn-primary,
+.actions .btn-ghost {
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 27rpx;
+}
+
+.again {
+  margin-top: 36rpx;
+  text-align: center;
+  font-size: 25rpx;
+  color: var(--brand);
+}
